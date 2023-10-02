@@ -1,55 +1,59 @@
 // Code assumes that input will include only positive integers
-// Code also assumes that input is properly formatted
+// Code also assumes that input will have at most 15 integers
+// I am not sure why we are using arrays. Could just get max and min as we are getting input
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 int main()
 {
-  char *string; 
-  size_t string_size = 401; //In actuality, 1 size less
+  char input[401];
+  char exit_key[3] = "q\n";
   char *success;
+  int num_values = 0;
+  int min_value = -1;
+  int max_value = -1;
+  int *arr_ptr;
 
-  string = (char *)malloc(string_size * sizeof(char)); 
-  if(string == NULL) { 
-    perror("Failed to allocate memory for buffer\n"); 
+  arr_ptr = (int *)malloc(15 * sizeof(int)); //at most 15 integers
+  if(arr_ptr == NULL) { 
+    perror("Failed to allocate memory for int array\n"); 
     exit(1); 
   }
 
-  printf("Please enter the series of integers (separated by ',') for which you would like to find the minimum and maximum (Example input: '1,2,2,3,4,5,67,7,5'): ");
-  success = fgets(string, string_size , stdin);
+  printf("Please enter the series of integers for which you would like to find the minimum and maximum.\nInput the integers by writing them out and pressing enter. Press 'q' to quit anytime.\n");
 
-  if (success == NULL) {
-    perror("Failed to read input\n"); 
-    exit(1); 
-  } else {
- 
-    int max_value = -1;
-    int min_value = -1;
-    int num_values = 0;
-    char *save_ptr;
-    char *token = strtok_r(string, ",", &save_ptr); 
-
-    while (token != NULL) {
-      num_values+=1; 
-
-      if (atoi(token) > max_value) {
-        max_value = atoi(token);
-      }
-
-      if (num_values == 1) {
-        min_value = atoi(token);
-      } else {
-        if (atoi(token) < min_value) {
-          min_value = atoi(token);
-        }
-      }
-
-      token = strtok_r(NULL, ",", &save_ptr); 
+  while (strcmp(input, exit_key)) {
+    printf("Integer %d: ", num_values+1);
+    success = fgets(input, 401, stdin);
+    if (success == NULL) {
+      perror("Failed to read input integer\n"); 
+      exit(1); 
     }
-    printf("Numbers entered: %d\nMinimum number is: %d\nMaximum number is: %d\n", num_values, min_value, max_value); 
+    if (strcmp(input, exit_key)) {
+      arr_ptr[num_values] = atoi(input);
+      num_values+=1;
+    }
   }
-  free(string);
+
+  int i;
+  for (i=0; i<num_values; i++) {
+    if (arr_ptr[i] > max_value) {
+      max_value = arr_ptr[i];
+    }
+
+    if (i == 0) {
+      min_value = arr_ptr[i];
+    } else {
+      if (arr_ptr[i] < min_value) {
+        min_value = arr_ptr[i];
+      }
+    }
+  }
+
+  free(arr_ptr);
+  printf("Numbers entered: %d\nMinimum number is: %d\nMaximum number is: %d\n", num_values, min_value, max_value); 
 }
 
 
